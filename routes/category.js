@@ -84,7 +84,7 @@ router.delete('/:id', async function(req, res, next) {
     }else{
       res.status(404).send({
         success:false,
-        message:"ID khomng ton tai"
+        message:"ID khong ton tai"
       });
     }
   } catch (error) {
