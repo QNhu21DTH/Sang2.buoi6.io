@@ -1,96 +1,108 @@
 var express = require('express');
 var router = express.Router();
-let categorySchema = require('../schemas/category')
+let categorySchema = require('../schemas/category');
 
-/* GET users listing. */
-router.get('/', async function(req, res, next) {
-  let categorys = await categorySchema.find({})
+/* GET all categories */
+router.get('/', async function (req, res, next) {
+  let categories = await categorySchema.find({});
   res.status(200).send({
-    success:true,
-    data:categorys
+    success: true,
+    data: categories,
   });
 });
-router.get('/:id', async function(req, res, next) {
+
+/* GET a specific category by ID */
+router.get('/:id', async function (req, res, next) {
   try {
     let id = req.params.id;
-    let category = await categorySchema.findById(id)
+    let category = await categorySchema.findById(id);
     res.status(200).send({
-      success:true,
-      data:category
+      success: true,
+      data: category,
     });
   } catch (error) {
     res.status(404).send({
-      success:false,
-      message:error.message
+      success: false,
+      message: error.message,
     });
   }
 });
-router.post('/', async function(req, res, next) {
+
+/* POST a new category */
+router.post('/', async function (req, res, next) {
   try {
     let body = req.body;
     let newCategory = new categorySchema({
-      name:body.name,
+      name: body.name,
+      description: body.description ? body.description : '',
     });
-    await newCategory.save()
+    await newCategory.save();
     res.status(200).send({
-      success:true,
-      data:newCategory
+      success: true,
+      data: newCategory,
     });
   } catch (error) {
     res.status(404).send({
-      success:false,
-      message:error.message
+      success: false,
+      message: error.message,
     });
   }
 });
-router.put('/:id', async function(req, res, next) {
+
+/* UPDATE an existing category by ID */
+router.put('/:id', async function (req, res, next) {
   try {
     let id = req.params.id;
     let category = await categorySchema.findById(id);
-    if(category){
+    if (category) {
       let body = req.body;
-      if(body.name){
+      if (body.name) {
         category.name = body.name;
       }
-      await category.save()
+      if (body.description) {
+        category.description = body.description;
+      }
+      await category.save();
       res.status(200).send({
-        success:true,
-        data:category
+        success: true,
+        data: category,
       });
-    }else{
+    } else {
       res.status(404).send({
-        success:false,
-        message:"ID khong ton tai"
+        success: false,
+        message: 'ID khong ton tai',
       });
     }
   } catch (error) {
     res.status(404).send({
-      success:false,
-      message:error.message
+      success: false,
+      message: error.message,
     });
   }
 });
-router.delete('/:id', async function(req, res, next) {
+
+/* DELETE a category by ID (soft delete) */
+router.delete('/:id', async function (req, res, next) {
   try {
     let id = req.params.id;
     let category = await categorySchema.findById(id);
-    if(category){
-      category.isDeleted = true
-      await category.save()
+    if (category) {
+      category.isDeleted = true;
+      await category.save();
       res.status(200).send({
-        success:true,
-        data:category
+        success: true,
+        data: category,
       });
-    }else{
+    } else {
       res.status(404).send({
-        success:false,
-        message:"ID khong ton tai"
+        success: false,
+        message: 'ID khong ton tai',
       });
     }
   } catch (error) {
     res.status(404).send({
-      success:false,
-      message:error.message
+      success: false,
+      message: error.message,
     });
   }
 });
